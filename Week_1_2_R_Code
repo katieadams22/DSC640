@@ -1,0 +1,79 @@
+R version 4.0.3 (2020-10-10) -- "Bunny-Wunnies Freak Out"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+R version change [4.0.3 -> 4.0.5] detected when restoring session; search path not restored
+> df<- read_excel('obama-approval-ratings.xls') #use this if you want to import xls
+Error in read_excel("obama-approval-ratings.xls") : 
+  could not find function "read_excel"
+> library("readxl")
+> library("ggplot2")
+> library("dplyr")
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library("tidyverse")
+── Attaching packages ─────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+✓ tibble  3.1.0     ✓ purrr   0.3.4
+✓ tidyr   1.1.3     ✓ stringr 1.4.0
+✓ readr   1.4.0     ✓ forcats 0.5.1
+── Conflicts ────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()
+> library("tidyr")
+> library("rlang")
+
+Attaching package: ‘rlang’
+
+The following objects are masked from ‘package:purrr’:
+
+    %@%, as_function, flatten, flatten_chr, flatten_dbl, flatten_int, flatten_lgl, flatten_raw,
+    invoke, list_along, modify, prepend, splice
+
+> df<- read_excel('obama-approval-ratings.xls') #use this if you want to import xls
+> # Basic barplot                                                                                             
+> p<-ggplot(data=df, aes(x=Issue, y=Approve)) +
++     geom_bar(stat="identity") + ggtitle("Approved by Issue")
+> p
+> 
+> # Horizontal bar plot
+> p + coord_flip()
+> # Stacked Bar Chart
+> df %>% tidyr::pivot_longer(!Issue, names_to = "Rating", values_to = "Count") %>% ggplot(aes(fill=Rating, y=Count, x=Issue)) + geom_bar(position="stack", stat="identity")
+> # Pie Chart
+> ggplot(df, aes(x="", y=Approve, fill=Issue)) +
++     geom_bar(stat="identity", width=1) +
++     coord_polar("y", start=0) + ggtitle("Approved by Issue")
+> # Donut Chart
+> 
+> # Increase the value to make the hole bigger
+> # Decrease the value to make the hole smaller
+> hsize <- 2
+> 
+> df <- df %>% 
++     mutate(x = hsize)
+> 
+> ggplot(df, aes(x = hsize, y = Approve, fill = Issue)) +
++     geom_col() +
++     coord_polar(theta = "y") +
++     xlim(c(0.2, hsize + 0.5))+ ggtitle("Approved by Issue")
